@@ -1,0 +1,34 @@
+# Lambda container image for the arXiv knowledge pipeline.
+#
+# We use a container image (not a zip deployment) because:
+#   1. unstructured + sentence-transformers + torch pull in native deps
+#      and large model files that don't fit Lambda's zip size limits
+#      (250MB unzipped) -- container images support up to 10GB.
+#   2. Both the spaCy model (used by unstructured for text classification)
+#      and the sentence-transformers embedding model need to be baked in
+#      at BUILD time. If left to download at runtime, every cold start
+#      would need network access to GitHub release assets and
+#      huggingface.co -- slow, and a needless point of failure in a
+#      Lambda execution environment, which may have restricted egress.
+
+FROM public.ecr.aws/lambda/python:3.11
+
+# System libraries unstructured needs for PDF parsing
+RUN dnf install -y poppler-utils && dnf clean all
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Bake the spaCy model into the image at build time (see parse.py for
+# why this matters -- unstructured fetches this from a GitHub release
+# URL the first time it's needed if it isn't already present).
+RUN python -m spacy download en_core_web_sm
+
+# Bake the sentence-transformers embedding model into the image at
+# build time too, so Lambda cold starts never hit huggingface.co.
+RUN python -c "from sentence_transformers import SentenceTransformer; \
+    SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
+
+COPY src/ ${LAMBDA_TASK_ROOT}/
+
+CMD ["lambda_handler.handler"]

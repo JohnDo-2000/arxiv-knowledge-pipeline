@@ -1,0 +1,24 @@
+# --- Ingestion ---
+arxiv==4.0.0
+boto3>=1.34.0
+
+# --- Parsing ---
+# unstructured needs the spaCy English model -- run this once after
+# installing requirements:
+#     python -m spacy download en_core_web_sm
+unstructured==0.23.1
+unstructured_inference==1.6.13
+pdfminer.six
+spacy==3.8.14
+
+# --- Chunking ---
+langchain-text-splitters==1.1.2
+
+# --- Embeddings ---
+sentence-transformers==5.6.0
+
+# --- Vector store ---
+qdrant-client==1.18.0
+
+# --- Dev / test helpers (used to generate the synthetic sample PDF) ---
+reportlab==4.4.10

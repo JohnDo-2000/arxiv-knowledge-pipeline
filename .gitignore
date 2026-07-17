@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Data (don't commit downloaded PDFs or local Qdrant storage)
+data/raw/*
+data/sample_pdfs/*.pdf
+!data/sample_pdfs/.gitkeep
+qdrant_storage/
+
+# Env / secrets
+.env
+
+# OS
+.DS_Store
