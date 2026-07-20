@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.12.1+cpu
 # --- Ingestion ---
 arxiv==4.0.0
 boto3>=1.34.0
@@ -10,6 +12,10 @@ unstructured==0.23.1
 unstructured_inference==1.6.13
 pdfminer.six
 spacy==3.8.14
+pi_heif
+pdf2image
+pikepdf
+opencv-python-headless
 
 # --- Chunking ---
 langchain-text-splitters==1.1.2

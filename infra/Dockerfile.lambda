@@ -11,10 +11,10 @@
 #      huggingface.co -- slow, and a needless point of failure in a
 #      Lambda execution environment, which may have restricted egress.
 
-FROM public.ecr.aws/lambda/python:3.11
+FROM public.ecr.aws/lambda/python:3.12
 
 # System libraries unstructured needs for PDF parsing
-RUN dnf install -y poppler-utils && dnf clean all
+RUN dnf install -y poppler-utils gcc gcc-c++ mesa-libGL && dnf clean all
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -26,9 +26,11 @@ RUN python -m spacy download en_core_web_sm
 
 # Bake the sentence-transformers embedding model into the image at
 # build time too, so Lambda cold starts never hit huggingface.co.
+ENV HF_HOME=/var/task/hf_cache
 RUN python -c "from sentence_transformers import SentenceTransformer; \
     SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
 
 COPY src/ ${LAMBDA_TASK_ROOT}/
 
+ENV HOME=/tmp
 CMD ["lambda_handler.handler"]

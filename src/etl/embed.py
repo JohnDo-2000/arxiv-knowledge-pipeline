@@ -22,7 +22,7 @@ so cold starts never hit the network.
 """
 
 from __future__ import annotations
-
+import os 
 import logging
 
 import numpy as np
@@ -45,7 +45,12 @@ def get_model(model_name: str = DEFAULT_MODEL_NAME) -> SentenceTransformer:
     """
     if model_name not in _model_cache:
         logger.info("Loading embedding model: %s", model_name)
-        _model_cache[model_name] = SentenceTransformer(model_name)
+        cache_folder = os.environ.get("SENTENCE_TRANSFORMERS_HOME", None)
+        _model_cache[model_name] = SentenceTransformer(
+            model_name,
+            cache_folder=cache_folder,
+            local_files_only=True,
+        )
     return _model_cache[model_name]
 
 
