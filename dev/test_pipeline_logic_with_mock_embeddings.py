@@ -3,10 +3,9 @@ DEV-ONLY test script -- validates the chunk -> upsert -> metadata-filtered
 search logic end-to-end using a fake embedding function (random vectors
 seeded by text hash, so identical text always gets the same vector).
 
-This exists because the sandbox used to build this repo can't reach
-huggingface.co to download real model weights. On your machine, use
-scripts/run_local_demo.py instead, which uses the REAL embed.py with
-real sentence-transformers embeddings.
+Tests chunking, upserting and metadata filters using fake deterministic 
+embeddings, so the storage and filter logic can be checked quickly without 
+loading the real model.
 
 This script proves the Qdrant collection setup, payload structure, and
 metadata filter logic (category / author / date range) all work
