@@ -11,8 +11,7 @@ don't debug pipeline logic and AWS plumbing at the same time.
 aws s3 mb s3://your-arxiv-pipeline-bucket
 ```
 
-This reuses the same AWS account as your job-market-analysis project,
-so no new account setup is needed.
+Uses the same AWS account as my Texas Job Market pipeline
 
 ## 2. Decide where Qdrant lives
 
@@ -22,8 +21,7 @@ it needs to be a separately running server that Lambda calls over the
 network. Two reasonable options for a portfolio project:
 
   - **Small EC2 instance** running the same `docker-compose.yml` from
-    this repo. Simple, cheap on free tier, and you already understand
-    EC2 conceptually if you've used Lambda before.
+    this repo. Simple, cheap on free tier.
   - **Qdrant Cloud free tier** -- a managed Qdrant instance, zero infra
     to babysit, but less "infra you stood up yourself" to talk about
     in an interview.
@@ -75,8 +73,8 @@ aws lambda create-function \
 Notes:
   - **Memory**: 2048MB is a reasonable starting point given torch +
     sentence-transformers' footprint. Watch CloudWatch metrics after
-    a few runs and tune down if usage is consistently lower (same
-    spirit as the 256MB/232MB peak you tuned in your other project).
+    a few runs and tune down if usage is consistently lower
+    (Measured peak: 1,757 MB of 2,048 MB, so 2,048 MB was kept).
   - **Timeout**: 300s (5 min) gives headroom for PDF parsing +
     embedding a multi-page paper. Tune based on actual observed
     duration.
@@ -94,8 +92,8 @@ aws lambda update-function-configuration \
 
 ## 5. Configure the S3 event trigger
 
-This is the key difference from your other project's EventBridge cron
-trigger -- this pipeline is event-driven, firing immediately when a
+Unlike my job market pipeline’s EventBridge schedule,
+this pipeline is event-driven, firing immediately when a
 new PDF lands, rather than on a fixed schedule.
 
 ```
@@ -144,11 +142,3 @@ Then check CloudWatch Logs for the `arxiv-pipeline` function to
 confirm it fired and processed the uploaded PDFs, and check your
 Qdrant collection's point count to confirm chunks landed.
 
-## 7. Monitoring
-
-Same pattern as your other project: CloudWatch for Lambda
-duration/memory/error metrics. Worth screenshotting actual
-invocation metrics (duration, memory used, cold start time) for your
-README/resume bullets once you've run this for real, the same way you
-captured "Lambda timeout: 5 minutes... peak usage: 232 MB" for the
-job-market-analysis project.
