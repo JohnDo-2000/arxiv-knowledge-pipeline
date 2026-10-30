@@ -173,32 +173,3 @@ arxiv-knowledge-pipeline/
 ├── docs/architecture.md
 └── docker-compose.yml             # local Qdrant
 ```
-
----
-
-## Resume Bullets
-
-```
-arXiv Knowledge Pipeline | Python, unstructured.io, LangChain,
-sentence-transformers, Qdrant, AWS S3, Lambda
-
-• Built an event-driven ETL pipeline that ingests unstructured arXiv
-  PDFs from S3, parses and cleans them with unstructured.io (filtering
-  headers/footers/boilerplate), chunks with LangChain's
-  RecursiveCharacterTextSplitter, and generates 384-dim embeddings
-  with HuggingFace sentence-transformers — no paid API required
-
-• Upserted 520 vector chunks from 5 real arXiv papers (~104 chunks/paper)
-  into a self-hosted Qdrant vector store with rich metadata payloads
-  (arxiv_id, authors, category, published_date), enabling filtered
-  semantic search by category, author, and date range
-
-• Deployed pipeline as an AWS Lambda container image (vs. zip) to
-  accommodate ML dependencies exceeding the 250MB zip limit; baked
-  spaCy and sentence-transformer models into the image at build time
-  to eliminate cold-start network dependency on HuggingFace/GitHub
-
-• Implemented S3 ObjectCreated event trigger (vs. scheduled cron in
-  companion job-market pipeline), demonstrating event-driven pipeline
-  architecture alongside traditional batch ELT patterns
-```
